@@ -10,6 +10,13 @@ configure.grant(
     role="guillotina.Authenticated")
 
 
+app_settings = {
+    "static": [{
+        "swagger_static": 'guillotina_swagger:static'
+    }]
+}
+
+
 def includeme(root):
     configure.scan("guillotina_swagger.services")
     configure.scan("guillotina_swagger.content")

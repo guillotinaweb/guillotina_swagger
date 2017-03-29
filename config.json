@@ -7,11 +7,9 @@
     "applications": [
         "guillotina_swagger"
     ],
-    "static": [
-  		{
-        "static": "static"
-      }
-  	],
+    "static": [{
+      "swagger_static": "guillotina_swagger:static"
+    }],
     "databases": [{
 		"db": {
 			"storage": "postgresql",
