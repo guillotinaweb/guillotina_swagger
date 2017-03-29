@@ -1,0 +1,8 @@
+env
+var
+*.pyc
+*.pyo
+include/
+lib/
+pip-selfcheck.json
+src/

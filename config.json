@@ -1,0 +1,32 @@
+{
+    "debug": true,
+
+    "address": 8080,
+    "root_user": { "password": "root" },
+
+    "applications": [
+        "guillotina_swagger"
+    ],
+    "static": [
+  		{
+        "static": "static"
+      }
+  	],
+    "databases": [{
+		"db": {
+			"storage": "postgresql",
+			"type": "postgres",
+      "dsn": {
+        "scheme": "postgres",
+        "dbname": "guillotina",
+        "user": "postgres",
+        "host": "localhost",
+        "password": "",
+        "port": 5432
+      },
+      "options": {
+        "read_only": false
+      }
+		}
+	}]
+}
