@@ -1,11 +1,14 @@
+from guillotina import app_settings
 from guillotina import configure
 from guillotina.api.service import Service
-from zope.interface import Interface
 from guillotina.interfaces import IApplication
-import copy
+from guillotina.interfaces import IInteraction
+from guillotina.utils import get_content_path
+from guillotina.utils import resolve_dotted_name
 from guillotina_swagger.utils import get_scheme
-from guillotina import app_settings
-from guillotina.utils import resolve_dotted_name, get_content_path
+from zope.interface import Interface
+
+import copy
 import os
 
 
@@ -13,8 +16,8 @@ swagger_def_template = definition = {
     "swagger": "2.0",
     "info": {
         "version": "1.0.0",
-        "title": "",
-        "description": ""
+        "title": "Guillotina",
+        "description": "The REST Resource API"
     },
     "host": "",
     "basePath": "",
@@ -31,10 +34,9 @@ swagger_def_template = definition = {
 
 
 @configure.service(
-    context=Interface,
-    method='GET',
-    name="@swagger",
-    permission="guillotina_swagger.View")
+    method='GET', context=Interface, name="@swagger",
+    permission="guillotina_swagger.View",
+    summary='Return a swagger json definition')
 class SwaggerDefinitionService(Service):
     __allow_access__ = True
 
@@ -48,9 +50,17 @@ class SwaggerDefinitionService(Service):
                         api_def,
                         tags=[name.strip('@')])
             else:
+                if method.lower() == 'options':
+                    continue
+
                 if path not in api_def:
                     api_def[path] = {}
+
                 service_def = iface_conf[method]
+                if not self.interaction.check_permission(
+                        service_def['permission'], self.context):
+                    continue
+
                 api_def[path][method.lower()] = {
                     "tags": tags,
                     "parameters": service_def.get('parameters', {}),
@@ -61,6 +71,7 @@ class SwaggerDefinitionService(Service):
                 }
 
     async def __call__(self):
+        self.interaction = IInteraction(self.request)
         definition = copy.deepcopy(swagger_def_template)
         definition['host'] = self.request.host
         definition['schemes'] = [get_scheme(self.request)]

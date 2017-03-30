@@ -1,0 +1,11 @@
+/*
+No way, purse css? how is this possible?
+
+Well, since it's minimal, we'll do it this way for now...
+
+*/
+
+/* remove swagger branding and we only want this to work with Guillotina */
+.info_title {
+  display: none;
+}

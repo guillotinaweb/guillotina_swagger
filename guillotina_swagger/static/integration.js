@@ -1,0 +1,213 @@
+/* global
+  SwaggerUi,
+  localStorage,
+  XMLHttpRequest,
+  btoa,
+  hljs,
+  SwaggerClient
+*/
+/*
+No way, pure js(minus swagger ui), how is this possible?
+
+Well, let's give the old fashioned way a try I guess since building swagger ui
+separately was painful...
+
+Things we're trying to do...
+
+- authenticate
+- load swagger json
+- load swagger ui with authenticated requests...
+
+*/
+
+
+var _E = function(el){
+  var that = this;
+  that.hide = function(){
+    el.style.display = 'none';
+  };
+  that.show = function(){
+    el.style.display = 'block';
+  };
+  that.addClass = function(klassName){
+    if (el.classList){
+      el.classList.add(klassName);
+    }else{
+      el.className += ' ' + klassName;
+    }
+  };
+  that.removeClass = function(klassName){
+    if (el.classList){
+      el.classList.remove(klassName);
+    }else{
+      el.className = el.className.replace(new RegExp('(^|\\b)' + klassName.split(' ').join('|') + '(\\b|$)', 'gi'), ' ');
+    }
+  };
+};
+var Q = function(qs){
+  return document.querySelector(qs);
+};
+var E = function(el){
+  /* element utilities... like jq */
+  if(typeof(el) === 'string'){
+    // query selector for it...
+    el = Q(el);
+  }
+  return new _E(el);
+};
+
+
+var Authenticator = function(options){
+  var _ls_username_key = '_swagger_username';
+  var _ls_password_key = '_swagger_password';
+  var _ls_base_url = '_swagger_base_url';
+
+  var that = this;
+  that.elements = {
+    username: Q('#username'),
+    password: Q('#password'),
+    baseUrl: Q('#baseUrl'),
+    modal: Q('#login-modal'),
+    authBtn: Q('#authenticate'),
+    cancelAuthBtn: Q('#cancel'),
+    reauthWrapper: Q('#auth_container'),
+    reauthBtn: Q('#auth_container a'),
+  };
+
+  that.init = function(){
+    that.username = localStorage.getItem(_ls_username_key) || '';
+    that.password = localStorage.getItem(_ls_password_key) || '';
+    that.baseUrl = localStorage.getItem(_ls_base_url) || 'http://localhost:8080/';
+    that.options = options;
+    that.elements.authBtn.addEventListener('click', that.authenticateClicked);
+    that.elements.reauthBtn.addEventListener('click', function(e){
+      e.preventDefault();
+      that.showModal();
+    });
+    that.elements.cancelAuthBtn.addEventListener('click', function(e){
+      e.preventDefault();
+      that.hideModal();
+    });
+  };
+
+  that.isLoggedIn = function(){
+    return that.username && that.password;
+  };
+
+  that.showModal = function(){
+    that.elements.username.value = that.username;
+    that.elements.password.value = that.password;
+    that.elements.baseUrl.value = that.baseUrl;
+    E(that.elements.modal).show();
+  };
+  that.hideModal = function(){
+    E(that.elements.modal).hide();
+  };
+
+  that.authenticateClicked = function(e){
+    e.preventDefault();
+    that.username = that.elements.username.value;
+    that.password = that.elements.password.value;
+    that.baseUrl = that.elements.baseUrl.value;
+    localStorage.setItem(_ls_username_key, that.username);
+    localStorage.setItem(_ls_password_key, that.password);
+    localStorage.setItem(_ls_base_url, that.baseUrl);
+    if(that.options.onLogin){
+      that.options.onLogin();
+    }
+    that.hideModal();
+  };
+
+  that.getAuthToken = function(){
+    return btoa(that.username + ':' + that.password);
+  };
+
+  that.init();
+};
+
+var Application = function(){
+  var that = this;
+
+  that.init = function(){
+    that.ui = null;
+    that.authenticator = new Authenticator({
+      application: that,
+      onLogin: function(){
+        window.location.hash = '';
+        that.render();
+      }
+    });
+    if(!that.authenticator.isLoggedIn()){
+      that.authenticator.showModal();
+    }else{
+      that.render();
+    }
+
+    hljs.configure({
+      highlightSizeThreshold: 5000
+    });
+    if(window.SwaggerTranslator) {
+      window.SwaggerTranslator.translate();
+    }
+  };
+
+  that.render = function(){
+    that.getSwagger(function(definition){
+      that.ui = new SwaggerUi({
+        spec: definition,
+        dom_id: "swagger-ui-container",
+        supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
+        validatorUrl: "//online.swagger.io/validator",
+        onComplete: function(){
+        },
+        onFailure: function() {
+          console.log("Unable to Load SwaggerUI");
+        },
+        docExpansion: "none",
+        jsonEditor: false,
+        defaultModelRendering: 'schema',
+        showRequestHeaders: false,
+        showOperationIds: false
+      });
+
+      that.ui.load();
+      that.ui.api.clientAuthorizations.add(
+        "auth_name", new SwaggerClient.ApiKeyAuthorization(
+          "AUTHORIZATION", 'Basic ' + that.authenticator.getAuthToken(), "header"));
+    });
+  };
+
+  that.getSwagger = function(onLoad){
+    var request = new XMLHttpRequest();
+    request.open('GET', this.authenticator.baseUrl + '@swagger', true);
+    request.setRequestHeader("AUTHORIZATION", 'Basic ' + that.authenticator.getAuthToken());
+
+    request.onload = function() {
+      if (request.status >= 200 && request.status < 400) {
+        // Success!
+        var resp = request.responseText;
+        onLoad(JSON.parse(resp));
+      } else {
+        // We reached our target server, but it returned an error
+        alert('Error getting swagger definition. Try using different url or auth details');
+        that.authenticator.showModal();
+      }
+    };
+
+    request.onerror = function() {
+      // There was a connection error of some sort
+      alert('Error getting swagger definition. Try using different url or auth details');
+      that.authenticator.showModal();
+    };
+
+    request.send();
+
+  };
+
+  that.init();
+};
+
+
+window.onload = function() {
+  new Application();
+};
