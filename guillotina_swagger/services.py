@@ -50,7 +50,7 @@ class SwaggerDefinitionService(Service):
                     continue
 
                 api_def[path][method.lower()] = {
-                    "tags": tags,
+                    "tags": tags or [''],
                     "parameters": self.get_data(service_def.get('parameters', {})),
                     "produces": self.get_data(service_def.get('produces', [])),
                     "summary": self.get_data(service_def.get('summary', '')),

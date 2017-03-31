@@ -56,6 +56,22 @@ var E = function(el){
   return new _E(el);
 };
 
+var urlJoin = function(){
+  var parts = [];
+  Array.prototype.slice.call(arguments).forEach(function(part, idx){
+    if(idx !== 0){
+      if(part.substring(0, 1) === '/'){
+        part = part.substring(1);
+      }
+    }
+    if(part.substring(part.length - 1, part.length) === '/'){
+      part = part.substring(0, part.length - 1);
+    }
+    parts.push(part);
+  });
+  return parts.join('/');
+};
+
 
 var Authenticator = function(options){
   var _ls_username_key = '_swagger_username';
@@ -157,29 +173,18 @@ var Application = function(){
         spec: definition,
         dom_id: "swagger-ui-container",
         supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
-        validatorUrl: "//online.swagger.io/validator",
+        validatorUrl: null,
+        docExpansion: 'list',
         onComplete: function(){
         },
         onFailure: function() {
           console.log("Unable to Load SwaggerUI");
         },
-        docExpansion: "none",
         jsonEditor: false,
         defaultModelRendering: 'schema',
         showRequestHeaders: false,
         showOperationIds: false,
-        apisSorter: function(one, two){
-          if(one.name === 'default'){
-            return -1;
-          }else if(two.name === 'default'){
-            return 1;
-          }
-          if(one.name > two.name){
-            return 1;
-          }else{
-            return -1;
-          }
-        },
+        apisSorter: 'alpha',
         operationsSorter: function(one, two){
           if(one.method === 'get'){
             return -1;
@@ -199,7 +204,7 @@ var Application = function(){
 
   that.getSwagger = function(onLoad){
     var request = new XMLHttpRequest();
-    request.open('GET', this.authenticator.baseUrl + '@swagger', true);
+    request.open('GET', urlJoin(this.authenticator.baseUrl, '@swagger'), true);
     request.setRequestHeader("AUTHORIZATION", 'Basic ' + that.authenticator.getAuthToken());
 
     request.onload = function() {
