@@ -10,35 +10,20 @@ from zope.interface import Interface
 
 import copy
 import os
-
-
-swagger_def_template = definition = {
-    "swagger": "2.0",
-    "info": {
-        "version": "1.0.0",
-        "title": "Guillotina",
-        "description": "The REST Resource API"
-    },
-    "host": "",
-    "basePath": "",
-    "schemes": [],
-    "produces": [
-        "application/json"
-    ],
-    "consumes": [
-        "application/json"
-    ],
-    "paths": {},
-    "definitions": {}
-}
+import pkg_resources
 
 
 @configure.service(
     method='GET', context=Interface, name="@swagger",
     permission="guillotina_swagger.View",
-    summary='Return a swagger json definition')
+    ignore=True)
 class SwaggerDefinitionService(Service):
     __allow_access__ = True
+
+    def get_data(self, data):
+        if callable(data):
+            data = data(self.context)
+        return data
 
     def get_endpoints(self, iface_conf, path, api_def, tags=[]):
         for method in iface_conf.keys():
@@ -57,24 +42,28 @@ class SwaggerDefinitionService(Service):
                     api_def[path] = {}
 
                 service_def = iface_conf[method]
+                if service_def.get('ignore'):
+                    continue
+
                 if not self.interaction.check_permission(
                         service_def['permission'], self.context):
                     continue
 
                 api_def[path][method.lower()] = {
                     "tags": tags,
-                    "parameters": service_def.get('parameters', {}),
-                    "produces": service_def.get('produces', []),
-                    "summary": service_def.get('summary', ''),
-                    "description": service_def.get('description', ''),
-                    "responses": service_def.get('responses', {}),
+                    "parameters": self.get_data(service_def.get('parameters', {})),
+                    "produces": self.get_data(service_def.get('produces', [])),
+                    "summary": self.get_data(service_def.get('summary', '')),
+                    "description": self.get_data(service_def.get('description', '')),
+                    "responses": self.get_data(service_def.get('responses', {})),
                 }
 
     async def __call__(self):
         self.interaction = IInteraction(self.request)
-        definition = copy.deepcopy(swagger_def_template)
+        definition = copy.deepcopy(app_settings['swagger']['base'])
         definition['host'] = self.request.host
         definition['schemes'] = [get_scheme(self.request)]
+        definition["info"]["version"] = pkg_resources.get_distribution("guillotina").version
 
         api_defs = app_settings['api_definition']
 

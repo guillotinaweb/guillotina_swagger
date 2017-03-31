@@ -13,7 +13,28 @@ configure.grant(
 app_settings = {
     "static": [{
         "swagger_static": 'guillotina_swagger:static'
-    }]
+    }],
+    "swagger": {
+        "base": {
+            "swagger": "2.0",
+            "info": {
+                "version": "",
+                "title": "Guillotina",
+                "description": "The REST Resource API"
+            },
+            "host": "",
+            "basePath": "",
+            "schemes": [],
+            "produces": [
+                "application/json"
+            ],
+            "consumes": [
+                "application/json"
+            ],
+            "paths": {},
+            "definitions": {}
+        }
+    }
 }
 
 
