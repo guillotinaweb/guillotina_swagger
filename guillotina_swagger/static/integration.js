@@ -167,7 +167,27 @@ var Application = function(){
         jsonEditor: false,
         defaultModelRendering: 'schema',
         showRequestHeaders: false,
-        showOperationIds: false
+        showOperationIds: false,
+        apisSorter: function(one, two){
+          if(one.name === 'default'){
+            return -1;
+          }else if(two.name === 'default'){
+            return 1;
+          }
+          if(one.name > two.name){
+            return 1;
+          }else{
+            return -1;
+          }
+        },
+        operationsSorter: function(one, two){
+          if(one.method === 'get'){
+            return -1;
+          }else if(two.method === 'get'){
+            return 1;
+          }
+          return one.method > two.method;
+        }
       });
 
       that.ui.load();
