@@ -119,7 +119,7 @@ async def render_docs_index(context, request):
             get_scheme(request),
             request.host
         )
-    swagger_settings['initial_swagger_url'] = url.rstrip('/') + '/@swagger'
+    swagger_settings['initial_swagger_url'] = url
     return template.render(
         app_settings=app_settings,
         request=request,

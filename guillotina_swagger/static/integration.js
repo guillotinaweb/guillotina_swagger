@@ -93,7 +93,7 @@ var Authenticator = function(options){
   that.init = function(){
     that.username = localStorage.getItem(_ls_username_key) || '';
     that.password = localStorage.getItem(_ls_password_key) || '';
-    that.baseUrl = localStorage.getItem(_ls_base_url) || that.options.application.initial_swagger_url;
+    that.baseUrl = localStorage.getItem(_ls_base_url) || options.application.settings.initial_swagger_url;
     that.options = options;
     that.elements.authBtn.addEventListener('click', that.authenticateClicked);
     if(that.elements.reauthBtn){
