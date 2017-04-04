@@ -33,6 +33,7 @@ class SwaggerDefinitionService(Service):
         return data
 
     def load_swagger_info(self, api_def, path, method, tags, service_def):
+        path = path.rstrip('/')
         if path not in api_def:
             api_def[path] = {}
         api_def[path][method.lower()] = {
@@ -44,13 +45,13 @@ class SwaggerDefinitionService(Service):
             "responses": self.get_data(service_def.get('responses', {})),
         }
 
-    def get_endpoints(self, iface_conf, path, api_def, tags=[]):
+    def get_endpoints(self, iface_conf, base_path, api_def, tags=[]):
         for method in iface_conf.keys():
             if method == 'endpoints':
                 for name in iface_conf['endpoints']:
                     self.get_endpoints(
                         iface_conf['endpoints'][name],
-                        os.path.join(path, name),
+                        os.path.join(base_path, name),
                         api_def,
                         tags=[name.strip('@')])
             else:
@@ -65,15 +66,18 @@ class SwaggerDefinitionService(Service):
                         service_def['permission'], self.context):
                     continue
 
-                if 'traversed_service_definitions' in service_def:
-                    trav_defs = service_def['traversed_service_definitions']
-                    for sub_path, sub_service_def in trav_defs.items():
-                        self.load_swagger_info(
-                            api_def,
-                            os.path.join(path, sub_path),
-                            method, tags, sub_service_def)
-                else:
-                    self.load_swagger_info(api_def, path, method, tags, service_def)
+                for sub_path in [''] + service_def.get('extra_paths', []):
+                    path = os.path.join(base_path, sub_path)
+                    if 'traversed_service_definitions' in service_def:
+                        trav_defs = service_def['traversed_service_definitions']
+                        if isinstance(trav_defs, dict):
+                            for sub_path, sub_service_def in trav_defs.items():
+                                self.load_swagger_info(
+                                    api_def,
+                                    os.path.join(path, sub_path),
+                                    method, tags, sub_service_def)
+                    else:
+                        self.load_swagger_info(api_def, path, method, tags, service_def)
 
     async def __call__(self):
         self.interaction = IInteraction(self.request)
