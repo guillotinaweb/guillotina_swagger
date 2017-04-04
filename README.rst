@@ -1,8 +1,8 @@
 Introduction
 ============
 
-This project is an attempt to provide easy swagger integration for your
-guillotina application.
+A `guillotina` application to automatically generate swagger interfaces for
+APIs defined with `guillotina`.
 
 
 Configuration
