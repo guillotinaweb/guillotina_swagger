@@ -1,8 +1,9 @@
 from setuptools import setup, find_packages
 
 requires = [
-    'guillotina'
-    ]
+    'guillotina',
+    'jinja2'
+]
 
 setup(name='guillotina_swagger',
       version='1.0.0',

@@ -93,13 +93,15 @@ var Authenticator = function(options){
   that.init = function(){
     that.username = localStorage.getItem(_ls_username_key) || '';
     that.password = localStorage.getItem(_ls_password_key) || '';
-    that.baseUrl = localStorage.getItem(_ls_base_url) || 'http://localhost:8080/';
+    that.baseUrl = localStorage.getItem(_ls_base_url) || that.options.application.initial_swagger_url;
     that.options = options;
     that.elements.authBtn.addEventListener('click', that.authenticateClicked);
-    that.elements.reauthBtn.addEventListener('click', function(e){
-      e.preventDefault();
-      that.showModal();
-    });
+    if(that.elements.reauthBtn){
+      that.elements.reauthBtn.addEventListener('click', function(e){
+        e.preventDefault();
+        that.showModal();
+      });
+    }
     that.elements.cancelAuthBtn.addEventListener('click', function(e){
       e.preventDefault();
       that.hideModal();
@@ -141,8 +143,10 @@ var Authenticator = function(options){
   that.init();
 };
 
-var Application = function(){
+var Application = function(settings){
   var that = this;
+  that.settings = settings;
+  that.authenticator = null;
 
   that.init = function(){
     that.ui = null;
@@ -153,11 +157,7 @@ var Application = function(){
         that.render();
       }
     });
-    if(!that.authenticator.isLoggedIn()){
-      that.authenticator.showModal();
-    }else{
-      that.render();
-    }
+    that.render();
 
     hljs.configure({
       highlightSizeThreshold: 5000
@@ -196,16 +196,20 @@ var Application = function(){
       });
 
       that.ui.load();
-      that.ui.api.clientAuthorizations.add(
-        "auth_name", new SwaggerClient.ApiKeyAuthorization(
-          "AUTHORIZATION", 'Basic ' + that.authenticator.getAuthToken(), "header"));
+      if(that.authenticator.isLoggedIn()){
+        that.ui.api.clientAuthorizations.add(
+          "auth_name", new SwaggerClient.ApiKeyAuthorization(
+            "AUTHORIZATION", 'Basic ' + that.authenticator.getAuthToken(), "header"));
+        }
     });
   };
 
   that.getSwagger = function(onLoad){
     var request = new XMLHttpRequest();
     request.open('GET', urlJoin(this.authenticator.baseUrl, '@swagger'), true);
-    request.setRequestHeader("AUTHORIZATION", 'Basic ' + that.authenticator.getAuthToken());
+    if(that.authenticator.isLoggedIn()){
+      request.setRequestHeader("AUTHORIZATION", 'Basic ' + that.authenticator.getAuthToken());
+    }
 
     request.onload = function() {
       if (request.status >= 200 && request.status < 400) {
@@ -234,5 +238,6 @@ var Application = function(){
 
 
 window.onload = function() {
-  new Application();
+  var settings = JSON.parse(document.getElementById('swagger-configuration').innerHTML);
+  new Application(settings);
 };

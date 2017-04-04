@@ -15,7 +15,8 @@ app_settings = {
         "swagger_static": 'guillotina_swagger:static'
     }],
     "swagger": {
-        "base": {
+        "authenication_allowed": True,
+        "base_configuration": {
             "swagger": "2.0",
             "info": {
                 "version": "",

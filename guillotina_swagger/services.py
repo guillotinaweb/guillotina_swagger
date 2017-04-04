@@ -1,16 +1,22 @@
 from guillotina import app_settings
+from zope.interface.interfaces import ComponentLookupError
 from guillotina import configure
 from guillotina.api.service import Service
 from guillotina.interfaces import IApplication
-from guillotina.interfaces import IInteraction
+from guillotina.interfaces import IInteraction, IAbsoluteURL
 from guillotina.utils import get_content_path
 from guillotina.utils import resolve_dotted_name
 from guillotina_swagger.utils import get_scheme
 from zope.interface import Interface
+from jinja2 import Template
+from guillotina.component import getMultiAdapter
+from guillotina_swagger.utils import get_scheme
 
 import copy
 import os
 import pkg_resources
+
+here = os.path.dirname(os.path.realpath(__file__))
 
 
 @configure.service(
@@ -25,6 +31,18 @@ class SwaggerDefinitionService(Service):
             data = data(self.context)
         return data
 
+    def load_swagger_info(self, api_def, path, method, tags, service_def):
+        if path not in api_def:
+            api_def[path] = {}
+        api_def[path][method.lower()] = {
+            "tags": tags or [''],
+            "parameters": self.get_data(service_def.get('parameters', {})),
+            "produces": self.get_data(service_def.get('produces', [])),
+            "summary": self.get_data(service_def.get('summary', '')),
+            "description": self.get_data(service_def.get('description', '')),
+            "responses": self.get_data(service_def.get('responses', {})),
+        }
+
     def get_endpoints(self, iface_conf, path, api_def, tags=[]):
         for method in iface_conf.keys():
             if method == 'endpoints':
@@ -38,9 +56,6 @@ class SwaggerDefinitionService(Service):
                 if method.lower() == 'options':
                     continue
 
-                if path not in api_def:
-                    api_def[path] = {}
-
                 service_def = iface_conf[method]
                 if service_def.get('ignore'):
                     continue
@@ -49,18 +64,19 @@ class SwaggerDefinitionService(Service):
                         service_def['permission'], self.context):
                     continue
 
-                api_def[path][method.lower()] = {
-                    "tags": tags or [''],
-                    "parameters": self.get_data(service_def.get('parameters', {})),
-                    "produces": self.get_data(service_def.get('produces', [])),
-                    "summary": self.get_data(service_def.get('summary', '')),
-                    "description": self.get_data(service_def.get('description', '')),
-                    "responses": self.get_data(service_def.get('responses', {})),
-                }
+                if 'traversed_service_definitions' in service_def:
+                    trav_defs = service_def['traversed_service_definitions']
+                    for sub_path, sub_service_def in trav_defs.items():
+                        self.load_swagger_info(
+                            api_def,
+                            os.path.join(path, sub_path),
+                            method, tags, sub_service_def)
+                else:
+                    self.load_swagger_info(api_def, path, method, tags, service_def)
 
     async def __call__(self):
         self.interaction = IInteraction(self.request)
-        definition = copy.deepcopy(app_settings['swagger']['base'])
+        definition = copy.deepcopy(app_settings['swagger']['base_configuration'])
         definition['host'] = self.request.host
         definition['schemes'] = [get_scheme(self.request)]
         definition["info"]["version"] = pkg_resources.get_distribution("guillotina").version
@@ -83,3 +99,33 @@ class SwaggerDefinitionService(Service):
 
         definition["definitions"] = app_settings['json_schema_definitions']
         return definition
+
+
+@configure.service(
+    method='GET', context=Interface, name="@docs",
+    permission="guillotina_swagger.View",
+    ignore=True)
+async def render_docs_index(context, request):
+    fi = open(os.path.join(here, 'index.html'))
+    html = fi.read()
+    fi.close()
+    template = Template(html)
+    swagger_settings = app_settings['swagger']
+    try:
+        url = getMultiAdapter((context, request), IAbsoluteURL)()
+    except ComponentLookupError:
+        url = '{}://{}'.format(
+            get_scheme(request),
+            request.host
+        )
+    swagger_settings['initial_swagger_url'] = url.rstrip('/') + '/@swagger'
+    return template.render(
+        app_settings=app_settings,
+        request=request,
+        swagger_settings=swagger_settings,
+        base_url=url,
+        static_url='{}://{}/swagger_static/'.format(
+            get_scheme(request),
+            request.host
+        )
+    )
