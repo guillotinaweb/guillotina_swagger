@@ -1,0 +1,11 @@
+include *.json
+include *.rst
+include Makefile
+include buildout.cfg
+recursive-include guillotina_swagger *.css
+recursive-include guillotina_swagger *.gif
+recursive-include guillotina_swagger *.html
+recursive-include guillotina_swagger *.ico
+recursive-include guillotina_swagger *.js
+recursive-include guillotina_swagger *.png
+recursive-include guillotina_swagger *.ttf
