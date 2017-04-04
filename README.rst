@@ -5,10 +5,38 @@ This project is an attempt to provide easy swagger integration for your
 guillotina application.
 
 
-ToDo
-----
+Configuration
+-------------
 
-- authenticate before getting swagger definition
-  - swagger-ui provides a mechanism to provide your own swagger def inline
-    - download manually with auth, then without
-- integrate with guillotina api so you can traverse objects and see the API
+Available config.json options::
+
+    {
+        "swagger": {
+            "authentication_allowed": false,
+            "base_configuration": {
+                "swagger": "2.0",
+                "info": {
+                    "version": "",
+                    "title": "Guillotina",
+                    "description": "The REST Resource API"
+                },
+                "host": "",
+                "basePath": "",
+                "schemes": [],
+                "produces": [
+                    "application/json"
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "paths": {},
+                "definitions": {}
+            }
+        }
+    }
+
+
+Viewing swagger for resource
+----------------------------
+
+Append `@docs` onto any url: `http://localhost:8080/@docs`.
