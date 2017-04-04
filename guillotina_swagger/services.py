@@ -1,20 +1,21 @@
 from guillotina import app_settings
-from zope.interface.interfaces import ComponentLookupError
 from guillotina import configure
 from guillotina.api.service import Service
+from guillotina.component import getMultiAdapter
+from guillotina.interfaces import IAbsoluteURL
 from guillotina.interfaces import IApplication
-from guillotina.interfaces import IInteraction, IAbsoluteURL
+from guillotina.interfaces import IInteraction
 from guillotina.utils import get_content_path
 from guillotina.utils import resolve_dotted_name
 from guillotina_swagger.utils import get_scheme
-from zope.interface import Interface
 from jinja2 import Template
-from guillotina.component import getMultiAdapter
-from guillotina_swagger.utils import get_scheme
+from zope.interface import Interface
+from zope.interface.interfaces import ComponentLookupError
 
 import copy
 import os
 import pkg_resources
+
 
 here = os.path.dirname(os.path.realpath(__file__))
 
