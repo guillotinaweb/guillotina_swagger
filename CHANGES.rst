@@ -1,4 +1,4 @@
-1.0.1 (unreleased)
+1.0.1 (2017-06-07)
 ------------------
 
 - Fix getting path of resource
