@@ -3,10 +3,9 @@ from guillotina import configure
 from guillotina.api.service import Service
 from guillotina.component import getMultiAdapter
 from guillotina.interfaces import IAbsoluteURL
-from guillotina.interfaces import IApplication
 from guillotina.interfaces import IInteraction
-from guillotina.utils import get_content_path
 from guillotina.utils import resolve_dotted_name
+from guillotina_swagger.utils import get_full_content_path
 from guillotina_swagger.utils import get_scheme
 from jinja2 import Template
 from zope.interface import Interface
@@ -35,8 +34,8 @@ class SwaggerDefinitionService(Service):
     def load_swagger_info(self, api_def, path, method, tags, service_def):
         path = path.rstrip('/')
         if path not in api_def:
-            api_def[path] = {}
-        api_def[path][method.lower()] = {
+            api_def[path or '/'] = {}
+        api_def[path or '/'][method.lower()] = {
             "tags": tags or [''],
             "parameters": self.get_data(service_def.get('parameters', {})),
             "produces": self.get_data(service_def.get('produces', [])),
@@ -88,13 +87,7 @@ class SwaggerDefinitionService(Service):
 
         api_defs = app_settings['api_definition']
 
-        if IApplication.providedBy(self.context):
-            path = '/'
-        else:
-            path = '/{}'.format(self.request._db_id)
-            content_path = get_content_path(self.context)
-            if content_path not in (None, '/', ''):
-                path += content_path
+        path = get_full_content_path(self.request, self.context)
 
         for dotted_iface in api_defs.keys():
             iface = resolve_dotted_name(dotted_iface)

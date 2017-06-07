@@ -1,3 +1,7 @@
+from guillotina.utils import get_content_path
+from guillotina.interfaces import IApplication
+
+
 def get_url(req, path=''):
     return '{}://{}/{}'.format(get_scheme(req), req.host, path.lstrip('/'))
 
@@ -26,3 +30,14 @@ def get_scheme(req):
         return scheme
 
     return req.scheme
+
+
+def get_full_content_path(request, ob):
+    path = '/'
+    if hasattr(request, '_db_id'):
+        path += request._db_id + '/'
+    if hasattr(request, 'container'):
+        path += request.container.__name__ + '/'
+    if IApplication.providedBy(ob):
+        return path
+    return '{}{}'.format(path, get_content_path(ob)).replace('//', '/').rstrip('/')

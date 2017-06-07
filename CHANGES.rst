@@ -1,7 +1,7 @@
 1.0.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix getting path of resource
 
 
 1.0.0 (2017-04-04)
