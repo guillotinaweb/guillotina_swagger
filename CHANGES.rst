@@ -1,4 +1,4 @@
-1.0.2 (unreleased)
+1.0.2 (2017-06-12)
 ------------------
 
 - be able to provide custom base_url for swagger
