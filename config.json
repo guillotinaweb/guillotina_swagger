@@ -10,10 +10,14 @@
     "static": [{
       "swagger_static": "guillotina_swagger:static"
     }],
+    "swagger": {
+      "authentication_allowed": true,
+      "base_url": "/"
+    },
     "databases": [{
-		"db": {
-			"storage": "postgresql",
-			"type": "postgres",
+    "db": {
+      "storage": "postgresql",
+      "type": "postgres",
       "dsn": {
         "scheme": "postgres",
         "dbname": "guillotina",
@@ -25,6 +29,6 @@
       "options": {
         "read_only": false
       }
-		}
-	}]
+    }
+  }]
 }

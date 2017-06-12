@@ -109,21 +109,20 @@ async def render_docs_index(context, request):
     fi.close()
     template = Template(html)
     swagger_settings = app_settings['swagger']
-    try:
-        url = getMultiAdapter((context, request), IAbsoluteURL)()
-    except ComponentLookupError:
-        url = '{}://{}'.format(
-            get_scheme(request),
-            request.host
-        )
+    url = swagger_settings['base_url']
+    if url is None:
+        try:
+            url = getMultiAdapter((context, request), IAbsoluteURL)()
+        except ComponentLookupError:
+            url = '{}://{}'.format(
+                get_scheme(request),
+                request.host
+            )
     swagger_settings['initial_swagger_url'] = url
     return template.render(
         app_settings=app_settings,
         request=request,
         swagger_settings=swagger_settings,
         base_url=url,
-        static_url='{}://{}/swagger_static/'.format(
-            get_scheme(request),
-            request.host
-        )
+        static_url='{}/swagger_static/'.format(url if url != '/' else '')
     )

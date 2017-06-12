@@ -16,6 +16,7 @@ app_settings = {
     }],
     "swagger": {
         "authentication_allowed": True,
+        "base_url": None,
         "base_configuration": {
             "swagger": "2.0",
             "info": {
