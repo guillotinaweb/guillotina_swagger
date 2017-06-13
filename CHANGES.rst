@@ -1,7 +1,7 @@
 1.0.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Pay attention to vhm
 
 
 1.0.2 (2017-06-12)
