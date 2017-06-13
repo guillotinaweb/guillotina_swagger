@@ -1,4 +1,4 @@
-1.0.5 (unreleased)
+1.0.5 (2017-06-13)
 ------------------
 
 - Also pull basePath for swagger from vhm if provided
