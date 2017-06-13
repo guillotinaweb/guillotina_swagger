@@ -11,8 +11,7 @@
       "swagger_static": "guillotina_swagger:static"
     }],
     "swagger": {
-      "authentication_allowed": true,
-      "base_url": "/"
+      "authentication_allowed": true
     },
     "databases": [{
     "db": {

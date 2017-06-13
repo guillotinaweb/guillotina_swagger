@@ -109,7 +109,7 @@ async def render_docs_index(context, request):
     fi.close()
     template = Template(html)
     swagger_settings = app_settings['swagger']
-    url = swagger_settings['base_url']
+    url = swagger_settings['base_url'] or request.headers.get('X-VirtualHost-Monster')
     if url is None:
         try:
             url = getMultiAdapter((context, request), IAbsoluteURL)()
