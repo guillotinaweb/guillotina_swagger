@@ -1,7 +1,8 @@
 1.0.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Use vhm for host setting on swagger
+  [vangheem]
 
 
 1.0.3 (2017-06-13)

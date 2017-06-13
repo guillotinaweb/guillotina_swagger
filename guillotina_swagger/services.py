@@ -8,6 +8,7 @@ from guillotina.utils import resolve_dotted_name
 from guillotina_swagger.utils import get_full_content_path
 from guillotina_swagger.utils import get_scheme
 from jinja2 import Template
+from urllib.parse import urlparse
 from zope.interface import Interface
 from zope.interface.interfaces import ComponentLookupError
 
@@ -81,8 +82,14 @@ class SwaggerDefinitionService(Service):
     async def __call__(self):
         self.interaction = IInteraction(self.request)
         definition = copy.deepcopy(app_settings['swagger']['base_configuration'])
-        definition['host'] = self.request.host
-        definition['schemes'] = [get_scheme(self.request)]
+        vhm = self.request.headers.get('X-VirtualHost-Monster')
+        if vhm:
+            parsed_url = urlparse(vhm)
+            definition['host'] = parsed_url.netloc
+            definition['schemes'] = [parsed_url.scheme]
+        else:
+            definition['host'] = self.request.host
+            definition['schemes'] = [get_scheme(self.request)]
         definition["info"]["version"] = pkg_resources.get_distribution("guillotina").version
 
         api_defs = app_settings['api_definition']
