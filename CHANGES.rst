@@ -1,4 +1,4 @@
-1.0.4 (unreleased)
+1.0.4 (2017-06-13)
 ------------------
 
 - Use vhm for host setting on swagger
