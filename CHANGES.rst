@@ -1,7 +1,8 @@
 1.0.5 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Also pull basePath for swagger from vhm if provided
+  [vangheem]
 
 
 1.0.4 (2017-06-13)

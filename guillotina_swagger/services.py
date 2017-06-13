@@ -87,6 +87,7 @@ class SwaggerDefinitionService(Service):
             parsed_url = urlparse(vhm)
             definition['host'] = parsed_url.netloc
             definition['schemes'] = [parsed_url.scheme]
+            definition['basePath'] = parsed_url.path
         else:
             definition['host'] = self.request.host
             definition['schemes'] = [get_scheme(self.request)]
