@@ -1,7 +1,8 @@
 1.0.7 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Tweak UI
+  [vangheem]
 
 
 1.0.6 (2017-06-18)
