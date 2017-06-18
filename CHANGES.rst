@@ -1,7 +1,8 @@
 1.0.6 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Automatically detect auth tokens and be able to provide own authorization header
+  [vangheem]
 
 
 1.0.5 (2017-06-13)

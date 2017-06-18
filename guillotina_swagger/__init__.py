@@ -17,6 +17,9 @@ app_settings = {
     "swagger": {
         "authentication_allowed": True,
         "base_url": None,
+        "auth_storage_search_keys": [
+            "auth"
+        ],
         "base_configuration": {
             "swagger": "2.0",
             "info": {
