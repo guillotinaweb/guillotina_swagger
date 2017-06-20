@@ -1,4 +1,4 @@
-1.0.8 (unreleased)
+1.0.8 (2017-06-19)
 ------------------
 
 - Add permission to documentation
