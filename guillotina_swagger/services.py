@@ -36,12 +36,17 @@ class SwaggerDefinitionService(Service):
         path = path.rstrip('/')
         if path not in api_def:
             api_def[path or '/'] = {}
+        desc = self.get_data(service_def.get('description', ''))
+        if desc:
+            desc += f" 〜 permission: {service_def['permission']}"
+        else:
+            desc += f"permission: {service_def['permission']}"
         api_def[path or '/'][method.lower()] = {
             "tags": tags or [''],
             "parameters": self.get_data(service_def.get('parameters', {})),
             "produces": self.get_data(service_def.get('produces', [])),
             "summary": self.get_data(service_def.get('summary', '')),
-            "description": self.get_data(service_def.get('description', '')),
+            "description": desc,
             "responses": self.get_data(service_def.get('responses', {})),
         }
 
@@ -72,6 +77,7 @@ class SwaggerDefinitionService(Service):
                         trav_defs = service_def['traversed_service_definitions']
                         if isinstance(trav_defs, dict):
                             for sub_path, sub_service_def in trav_defs.items():
+                                sub_service_def['permission'] = service_def['permission']
                                 self.load_swagger_info(
                                     api_def,
                                     os.path.join(path, sub_path),
