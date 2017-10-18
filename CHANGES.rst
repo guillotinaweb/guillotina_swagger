@@ -1,7 +1,8 @@
 1.0.9 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix when you don't use interfaces to define services
+  [vangheem]
 
 
 1.0.8 (2017-06-19)

@@ -11,6 +11,7 @@ from jinja2 import Template
 from urllib.parse import urlparse
 from zope.interface import Interface
 from zope.interface.interfaces import ComponentLookupError
+from zope.interface.interfaces import IInterface
 
 import copy
 import os
@@ -105,7 +106,12 @@ class SwaggerDefinitionService(Service):
 
         for dotted_iface in api_defs.keys():
             iface = resolve_dotted_name(dotted_iface)
-            if iface.providedBy(self.context):
+            matched = False
+            if IInterface.providedBy(iface):
+                matched = iface.providedBy(self.context)
+            else:
+                matched = iface == self.context.__class__
+            if matched:
                 iface_conf = api_defs[dotted_iface]
                 self.get_endpoints(iface_conf, path, definition['paths'])
 
