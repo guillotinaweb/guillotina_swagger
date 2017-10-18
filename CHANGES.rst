@@ -1,4 +1,4 @@
-1.0.9 (unreleased)
+1.0.9 (2017-10-18)
 ------------------
 
 - Fix when you don't use interfaces to define services
