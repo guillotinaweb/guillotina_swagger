@@ -6,3 +6,10 @@ include/
 lib/
 pip-selfcheck.json
 src/
+eggs/
+.DS_Store
+.installed.cfg
+.mr.developer.cfg
+develop-eggs/
+bin/
+*.egg-info/
