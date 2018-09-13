@@ -1,5 +1,11 @@
-1.0.10 (unreleased)
-------------------
+1.0.11 (unreleased)
+-------------------
+
+- Nothing changed yet.
+
+
+1.0.10 (2018-09-13)
+-------------------
 
 - More docs and support for customizing more parts of generated
   swagger definition.
