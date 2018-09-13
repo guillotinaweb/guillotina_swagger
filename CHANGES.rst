@@ -1,7 +1,9 @@
 1.0.9 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- More docs and support for customizing more parts of generated
+  swagger definition.
+  [vangheem]
 
 
 1.0.8 (2017-06-19)
