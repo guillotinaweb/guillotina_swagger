@@ -1,4 +1,4 @@
-1.0.9 (unreleased)
+1.0.10 (unreleased)
 ------------------
 
 - More docs and support for customizing more parts of generated
