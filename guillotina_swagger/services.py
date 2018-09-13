@@ -40,12 +40,15 @@ class SwaggerDefinitionService(Service):
         if path not in api_def:
             api_def[path or "/"] = {}
         desc = self.get_data(service_def.get("description", ""))
-        if desc:
-            desc += f" 〜 permission: {service_def['permission']}"
-        else:
-            desc += f"permission: {service_def['permission']}"
+        swagger_conf = service_def.get("swagger", {})
+        if swagger_conf.get("display_permission", True):
+            if desc:
+                desc += f" 〜 permission: {service_def['permission']}"
+            else:
+                desc += f"permission: {service_def['permission']}"
+
         api_def[path or "/"][method.lower()] = {
-            "tags": tags or [""],
+            "tags": swagger_conf.get("tags", [""]) or tags,
             "parameters": self.get_data(service_def.get("parameters", {})),
             "produces": self.get_data(service_def.get("produces", [])),
             "summary": self.get_data(service_def.get("summary", "")),
@@ -68,7 +71,12 @@ class SwaggerDefinitionService(Service):
                     continue
 
                 service_def = iface_conf[method]
-                if service_def.get("ignore"):
+                swagger_conf = service_def.get("swagger", {})
+                if (
+                    service_def.get("ignore")
+                    or service_def.get("swagger_ignore")
+                    or swagger_conf.get("ignore")
+                ):
                     continue
 
                 if not self.interaction.check_permission(
@@ -76,7 +84,7 @@ class SwaggerDefinitionService(Service):
                 ):
                     continue
 
-                for sub_path in [""] + service_def.get("extra_paths", []):
+                for sub_path in [""] + swagger_conf.get("extra_paths", []):
                     path = os.path.join(base_path, sub_path)
                     if "traversed_service_definitions" in service_def:
                         trav_defs = service_def[

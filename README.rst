@@ -40,3 +40,17 @@ Viewing swagger for resource
 ----------------------------
 
 Append `@docs` onto any url: `http://localhost:8080/@docs`.
+
+
+Generating swagger docs
+-----------------------
+
+`guillotina_swagger` reads service configuration.
+
+You can provide additional swagger configuration hints by providing a swagger
+configuration with any of the following options:
+
+- ignore: to prevent swagger from aggregating it
+- additional_paths: provide a list of additional paths this configuration is used for(think routing here)
+- display_permission: if you do not want to show permission setting, set this to false
+- tags: what tags to use for it
