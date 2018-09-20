@@ -11,7 +11,7 @@ configure.grant(
 
 
 app_settings = {
-    "static": [{"swagger_static": "guillotina_swagger:static"}],
+    "static": {"swagger_static": "guillotina_swagger:static"},
     "swagger": {
         "authentication_allowed": True,
         "base_url": None,

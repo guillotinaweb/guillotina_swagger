@@ -118,6 +118,10 @@ var Authenticator = function(options){
     }
     that.baseUrl = localStorage.getItem(_ls_base_url) || options.application.settings.initial_swagger_url;
     that.options = options;
+
+    if(!this.elements.authBtn){
+      return;
+    }
     that.elements.authBtn.addEventListener('click', that.authenticateClicked);
     if(that.elements.reauthBtn){
       that.elements.reauthBtn.addEventListener('click', function(e){
@@ -164,7 +168,7 @@ var Authenticator = function(options){
 
   that.getAuthToken = function(){
     if(that.authorization){
-      return that.authorization
+      return that.authorization;
     }
     return 'Basic ' + btoa(that.username + ':' + that.password);
   };

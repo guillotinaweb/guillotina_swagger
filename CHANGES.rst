@@ -1,7 +1,8 @@
 1.0.12 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Be able to customize swagger index.html file
+  [vangheem]
 
 
 1.0.11 (2018-09-14)

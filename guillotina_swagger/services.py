@@ -147,9 +147,13 @@ class SwaggerDefinitionService(Service):
     ignore=True,
 )
 async def render_docs_index(context, request):
-    fi = open(os.path.join(here, "index.html"))
-    html = fi.read()
-    fi.close()
+    if app_settings['swagger'].get('index_html'):
+        index_file = app_settings['swagger']['index_html']
+    else:
+        index_file = os.path.join(here, "index.html")
+    with open(index_file) as fi:
+        html = fi.read()
+
     template = Template(html)
     swagger_settings = app_settings["swagger"]
     url = swagger_settings["base_url"] or request.headers.get(

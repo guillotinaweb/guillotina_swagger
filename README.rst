@@ -31,7 +31,8 @@ Available config.json options::
                 ],
                 "paths": {},
                 "definitions": {}
-            }
+            },
+            "index_html": null
         }
     }
 
