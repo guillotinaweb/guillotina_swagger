@@ -1,4 +1,4 @@
-1.0.12 (unreleased)
+1.0.12 (2018-09-20)
 -------------------
 
 - Be able to customize swagger index.html file
