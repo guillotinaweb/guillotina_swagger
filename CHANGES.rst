@@ -1,7 +1,8 @@
 1.0.13 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Only provide version if not set
+  [vangheem]
 
 
 1.0.12 (2018-09-20)

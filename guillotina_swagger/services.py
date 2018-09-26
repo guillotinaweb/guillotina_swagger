@@ -121,9 +121,10 @@ class SwaggerDefinitionService(Service):
         else:
             definition["host"] = self.request.host
             definition["schemes"] = [get_scheme(self.request)]
-        definition["info"]["version"] = pkg_resources.get_distribution(
-            "guillotina"
-        ).version
+        if 'version' not in definition['info']:
+            definition["info"]["version"] = pkg_resources.get_distribution(
+                "guillotina"
+            ).version
 
         api_defs = app_settings["api_definition"]
 
