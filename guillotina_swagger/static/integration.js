@@ -202,39 +202,32 @@ var Application = function(settings){
 
   that.render = function(){
     that.getSwagger(function(definition){
-      that.ui = new SwaggerUi({
-        spec: definition,
-        dom_id: "swagger-ui-container",
+      console.log(definition)
+      that.ui = SwaggerUIBundle({
+        url: "http://localhost:8080/@swagger",
+        dom_id: '#swagger-ui-container',
         supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
-        validatorUrl: null,
-        docExpansion: 'list',
-        onComplete: function(){
-        },
         onFailure: function() {
           console.log("Unable to Load SwaggerUI");
         },
-        jsonEditor: false,
-        defaultModelRendering: 'schema',
-        showRequestHeaders: false,
-        showOperationIds: false,
-        apisSorter: 'alpha',
-        operationsSorter: function(one, two){
-          if(one.method === 'get'){
-            return -1;
-          }else if(two.method === 'get'){
-            return 1;
-          }
-          return one.method > two.method;
-        }
-      });
+        deepLinking: true,
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIStandalonePreset
+        ],
+        plugins: [
+          SwaggerUIBundle.plugins.DownloadUrl
+        ],
+        layout: "StandaloneLayout"
+      })
 
-      that.ui.load();
-      if(that.authenticator.isLoggedIn()){
-        var auth =
-        that.ui.api.clientAuthorizations.add(
-          "auth_name", new SwaggerClient.ApiKeyAuthorization(
-            "AUTHORIZATION", that.authenticator.getAuthToken(), "header"));
-        }
+      window.ui = that.ui
+      // if(that.authenticator.isLoggedIn()){
+      //   var auth =
+      //   that.ui.api.clientAuthorizations.add(
+      //     "auth_name", new SwaggerClient.ApiKeyAuthorization(
+      //       "AUTHORIZATION", that.authenticator.getAuthToken(), "header"));
+      //   }
     });
   };
 
@@ -248,7 +241,9 @@ var Application = function(settings){
     request.onload = function() {
       if (request.status >= 200 && request.status < 400) {
         // Success!
+        
         var resp = request.responseText;
+        console.log(JSON.parse(resp))
         onLoad(JSON.parse(resp));
       } else {
         // We reached our target server, but it returned an error

@@ -17,15 +17,17 @@ app_settings = {
         "base_url": None,
         "auth_storage_search_keys": ["auth"],
         "base_configuration": {
-            "swagger": "2.0",
+            "openapi": "3.0.0",
             "info": {
-                "version": "",
+                "version": "3.0.0",
                 "title": "Guillotina",
                 "description": "The REST Resource API",
             },
-            "host": "",
-            "basePath": "",
-            "schemes": [],
+            "servers": [
+                    {
+                        "url": "http://localhost:8080"
+                    }
+                ],
             "produces": ["application/json"],
             "consumes": ["application/json"],
             "paths": {},

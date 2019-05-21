@@ -148,6 +148,7 @@ class SwaggerDefinitionService(Service):
     ignore=True,
 )
 async def render_docs_index(context, request):
+    print(app_settings['swagger'])
     if app_settings['swagger'].get('index_html'):
         index_file = app_settings['swagger']['index_html']
     else:
@@ -164,8 +165,10 @@ async def render_docs_index(context, request):
         try:
             url = getMultiAdapter((context, request), IAbsoluteURL)()
         except ComponentLookupError:
-            url = "{}://{}".format(get_scheme(request), request.host)
+            url = "{}://{}".format(get_scheme(request), request.host)    
     swagger_settings["initial_swagger_url"] = url
+    print(swagger_settings)
+    print(app_settings['swagger']['base_configuration'])
     return template.render(
         app_settings=app_settings,
         request=request,
