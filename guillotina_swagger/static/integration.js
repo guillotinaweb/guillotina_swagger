@@ -204,7 +204,7 @@ var Application = function(settings){
     that.getSwagger(function(definition){
       console.log(definition)
       that.ui = SwaggerUIBundle({
-        url: "http://localhost:8080/@swagger",
+        url: "http://localhost:8080/db/@swagger",
         dom_id: '#swagger-ui-container',
         supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
         onFailure: function() {

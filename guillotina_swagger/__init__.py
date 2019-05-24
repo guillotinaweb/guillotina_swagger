@@ -19,7 +19,7 @@ app_settings = {
         "base_configuration": {
             "openapi": "3.0.0",
             "info": {
-                "version": "3.0.0",
+                "version": "1.0",
                 "title": "Guillotina",
                 "description": "The REST Resource API",
             },
@@ -28,10 +28,9 @@ app_settings = {
                         "url": "http://localhost:8080"
                     }
                 ],
-            "produces": ["application/json"],
-            "consumes": ["application/json"],
             "paths": {},
-            "definitions": {},
+            "security": {"basicaAuth":[]},
+            "components":{},
         },
     },
 }

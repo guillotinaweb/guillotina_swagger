@@ -46,7 +46,6 @@ class SwaggerDefinitionService(Service):
                 desc += f" 〜 permission: {service_def['permission']}"
             else:
                 desc += f"permission: {service_def['permission']}"
-
         api_def[path or "/"][method.lower()] = {
             "tags": swagger_conf.get("tags", [""]) or tags,
             "parameters": self.get_data(service_def.get("parameters", {})),
@@ -54,6 +53,7 @@ class SwaggerDefinitionService(Service):
             "summary": self.get_data(service_def.get("summary", "")),
             "description": desc,
             "responses": self.get_data(service_def.get("responses", {})),
+            "security":"",
         }
 
     def get_endpoints(self, iface_conf, base_path, api_def, tags=[]):
@@ -136,7 +136,8 @@ class SwaggerDefinitionService(Service):
                 iface_conf = api_defs[dotted_iface]
                 self.get_endpoints(iface_conf, path, definition["paths"])
 
-        definition["definitions"] = app_settings["json_schema_definitions"]
+        definition["components"]["schemas"] = app_settings["json_schema_definitions"]
+        
         return definition
 
 
@@ -148,7 +149,6 @@ class SwaggerDefinitionService(Service):
     ignore=True,
 )
 async def render_docs_index(context, request):
-    print(app_settings['swagger'])
     if app_settings['swagger'].get('index_html'):
         index_file = app_settings['swagger']['index_html']
     else:
@@ -167,8 +167,6 @@ async def render_docs_index(context, request):
         except ComponentLookupError:
             url = "{}://{}".format(get_scheme(request), request.host)    
     swagger_settings["initial_swagger_url"] = url
-    print(swagger_settings)
-    print(app_settings['swagger']['base_configuration'])
     return template.render(
         app_settings=app_settings,
         request=request,
