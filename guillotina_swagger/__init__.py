@@ -29,8 +29,23 @@ app_settings = {
                     }
                 ],
             "paths": {},
-            "security": {"basicaAuth":[]},
-            "components":{},
+            "security": {
+                "basicAuth": [],
+                "bearerAuth": [],
+                },
+            "components": {
+                "securitySchemes": {
+                    "basicAuth": {
+                        "type": "http",
+                        "scheme": "basic"
+                    },
+                    "bearerAuth":{
+                        "type": "http",
+                        "scheme": "bearer",
+                        "bearerFormat": "JWT"
+                    }
+	    	    }
+            },
         },
     },
 }
