@@ -270,24 +270,49 @@
 //   var settings = JSON.parse(document.getElementById('swagger-configuration').innerHTML);
 //   new Application(settings);
 // };
-window.onload = function(){
-ui = SwaggerUIBundle({
-          url: "http://localhost:8080/@swagger",
-          dom_id: '#swagger-ui-container',
-          supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
-          onFailure: function() {
-            console.log("Unable to Load SwaggerUI");
-          },
-          deepLinking: true,
-          presets: [
-            SwaggerUIBundle.presets.apis,
-            SwaggerUIStandalonePreset
-          ],
-          plugins: [
-            SwaggerUIBundle.plugins.DownloadUrl
-          ],
-          layout: "StandaloneLayout"
-        })
 
+var authToken = undefined;
+
+window.onload = function(){
+  ui = SwaggerUIBundle({
+    url: "http://localhost:8080/@swagger",
+    dom_id: '#swagger-ui-container',
+    supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
+    configs: {
+      preFetch: function(req) {
+        if (authToken) {
+          req.headers["Authorization"] = authToken;
+        }
+              return req;
+      }
+    },
+    onFailure: function() {
+      console.log("Unable to Load SwaggerUI");
+    },
+    deepLinking: true,
+    presets: [
+      SwaggerUIBundle.presets.apis,
+      SwaggerUIStandalonePreset
+    ],
+    plugins: [
+      SwaggerUIBundle.plugins.DownloadUrl
+    ],
+    layout: "StandaloneLayout",
+  })
+  
+  
+ 
+    var originalAuthorize = ui.authActions.authorize;
+    ui.authActions.authorize = function(authorization) {
+      if(authorization.basicAuth){
+      authToken = "Basic " + btoa(authorization.basicAuth.value.username+":"+authorization.basicAuth.value.password);
+      originalAuthorize(authorization);
+      }
+      if(authorization.bearerAuth){
+        authToken = "Bearer " + authorization.bearerAuth.value
+        originalAuthorize(authorization);
+      } 
+  };
+    
   window.ui=ui
 }

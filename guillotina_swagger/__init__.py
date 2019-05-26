@@ -29,10 +29,14 @@ app_settings = {
                     }
                 ],
             "paths": {},
-            "security": {
-                "basicAuth": [],
-                "bearerAuth": [],
+            "security": [
+                {
+                    "basicAuth": []
                 },
+                {
+                "bearerAuth": []
+                },
+                ],
             "components": {
                 "securitySchemes": {
                     "basicAuth": {
