@@ -4,7 +4,7 @@ requires = ['guillotina>=4.0.0,<5', "jinja2"]
 
 setup(
     name="guillotina_swagger",
-    version='1.0.14.dev0',
+    version='1.0.14',
     description="Swagger integration for viewing REST on your guillotina install",
     long_description=(
         open("README.rst").read() + "\n" + open("CHANGES.rst").read()
