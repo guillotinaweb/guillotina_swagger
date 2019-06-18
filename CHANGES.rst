@@ -1,7 +1,7 @@
 1.0.14 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- restrict g compat
 
 
 1.0.13 (2018-09-26)
