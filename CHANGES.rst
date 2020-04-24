@@ -1,7 +1,7 @@
 1.0.15 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- fixes for tags
 
 
 1.0.14 (2019-06-18)
